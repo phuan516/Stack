@@ -1,0 +1,7 @@
+node_modules
+dist
+.env
+.env.local
+
+# Knowledge graph — local only, not tracked
+graphify-out/

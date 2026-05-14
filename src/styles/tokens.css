@@ -1,0 +1,49 @@
+/* Console theme — the only production theme */
+:root {
+  --bg:          #0c1018;
+  --bg-2:        #131923;
+  --panel:       #161d2a;
+  --ink:         #d8e1f0;
+  --ink-2:       #8a97b0;
+  --ink-3:       #4a5572;
+  --rule:        #1f2738;
+  --rule-soft:   #1a2030;
+  --accent:      #38e1c1;
+  --accent-ink:  #0c1018;
+  --good:        #38e1c1;
+  --warn:        #f5b14a;
+  --bad:         #ff5d5d;
+  --grid:        rgba(216, 225, 240, 0.05);
+  --box-shell:   #2a3447;
+  --box-floor:   #1c2434;
+  --box-tint:    rgba(56, 225, 193, 0.04);
+
+  --font-sans:    "Inter", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+
+  --radius:    3px;
+  --radius-lg: 6px;
+  --shadow-sm: 0 1px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100vh;
+}
+
+button { font-family: inherit; cursor: pointer; }
+input  { font-family: inherit; }
