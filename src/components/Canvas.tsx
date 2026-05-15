@@ -13,29 +13,12 @@ export function Canvas({ packedResult, summary }: Props) {
   const view = useStore((s) => s.view);
   const setView = useStore((s) => s.setView);
   const activeBoxId = useStore((s) => s.activeBoxId);
-  const setActiveBoxId = useStore((s) => s.setActiveBoxId);
 
   const activeBox = packedResult.boxes.find((b) => b.boxId === activeBoxId) ?? packedResult.boxes[0];
 
   return (
     <div className="panel canvas">
       <div className="canvas-toolbar">
-        <div className="box-tabs">
-          {packedResult.boxes.map((pb) => {
-            const fillClass = pb.fillPct >= 0.85 ? 'accent' : pb.fillPct >= 0.6 ? 'good' : pb.fillPct >= 0.3 ? 'warn' : 'bad';
-            return (
-              <button
-                key={pb.boxId}
-                className={`box-tab ${activeBoxId === pb.boxId ? 'active' : ''}`}
-                onClick={() => setActiveBoxId(pb.boxId)}
-              >
-                <span className="tab-name">{pb.name}</span>
-                <span className="tab-stats">{pb.items.length} items · {Math.round(pb.fillPct * 100)}%</span>
-                <span className="fill-dot" style={{ background: `var(--${fillClass})` }} />
-              </button>
-            );
-          })}
-        </div>
         <div className="view-toggle">
           <button className={view === '3d' ? 'active' : ''} onClick={() => setView('3d')}>3D</button>
           <button className={view === 'layers' ? 'active' : ''} onClick={() => setView('layers')}>LAYERS</button>
