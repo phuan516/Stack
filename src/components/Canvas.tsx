@@ -1,4 +1,3 @@
-import { useRef, useState, useEffect, useMemo } from 'react';
 import { useStore } from '../state/useStore';
 import { Scene3D } from './Scene3D';
 import { LayerView } from './LayerView';
@@ -16,28 +15,7 @@ export function Canvas({ packedResult, summary }: Props) {
   const activeBoxId = useStore((s) => s.activeBoxId);
   const setActiveBoxId = useStore((s) => s.setActiveBoxId);
 
-  const stageRef = useRef<HTMLDivElement>(null);
-  const [stageSize, setStageSize] = useState({ w: 800, h: 500 });
-
-  useEffect(() => {
-    if (!stageRef.current) return;
-    const ro = new ResizeObserver((entries) => {
-      const r = entries[0].contentRect;
-      setStageSize({ w: r.width, h: r.height });
-    });
-    ro.observe(stageRef.current);
-    return () => ro.disconnect();
-  }, []);
-
   const activeBox = packedResult.boxes.find((b) => b.boxId === activeBoxId) ?? packedResult.boxes[0];
-
-  const scale = useMemo(() => {
-    if (!activeBox) return 1;
-    const padW = 120, padH = 120;
-    const availW = Math.max(200, stageSize.w - padW);
-    const availH = Math.max(200, stageSize.h - padH);
-    return Math.min(availW / activeBox.dims.w, availH / activeBox.dims.d);
-  }, [activeBox, stageSize]);
 
   return (
     <div className="panel canvas">
@@ -64,7 +42,7 @@ export function Canvas({ packedResult, summary }: Props) {
         </div>
       </div>
 
-      <div className="canvas-stage" ref={stageRef}>
+      <div className="canvas-stage">
         <div className="stage-grid" />
         <div className="stage-frame">
           {!activeBox || activeBox.items.length === 0 ? (
@@ -77,7 +55,7 @@ export function Canvas({ packedResult, summary }: Props) {
           ) : view === '3d' ? (
             <Scene3D box={activeBox} />
           ) : (
-            <LayerView box={activeBox} scale={scale} />
+            <LayerView box={activeBox} />
           )}
         </div>
 
