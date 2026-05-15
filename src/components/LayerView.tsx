@@ -15,7 +15,6 @@ export function LayerView({ box, scale }: Props) {
   const unit = useStore((s) => s.unit);
   const layerIdx = useStore((s) => s.layerIdx);
   const setLayerIdx = useStore((s) => s.setLayerIdx);
-  const showLabels = useStore((s) => s.showLabels);
 
   const layers = box.zLevels.length ? box.zLevels : [0];
   const idx = Math.min(Math.max(0, layerIdx), layers.length - 1);
@@ -76,7 +75,7 @@ export function LayerView({ box, scale }: Props) {
             }}
             title={`${it.name} · ${fmtDim(it.origW, unit)}×${fmtDim(it.origD, unit)}×${fmtDim(it.origH, unit)}`}
           >
-            {showLabels && it.w * scale > 50 && it.d * scale > 30 && (
+            {it.w * scale > 50 && it.d * scale > 30 && (
               <>
                 <div>{it.name}</div>
                 <div className="dim2d">{fmtDim(it.w, unit)}×{fmtDim(it.d, unit)}</div>

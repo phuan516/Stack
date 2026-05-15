@@ -118,12 +118,7 @@ function CameraRig({ dims }: { dims: { w: number; d: number; h: number } }) {
   return null;
 }
 
-interface Props {
-  box: PackedBox;
-  showLabels: boolean;
-}
-
-export function Scene3D({ box }: Props) {
+export function Scene3D({ box }: { box: PackedBox }) {
   const { dims, items } = box;
   const target: [number, number, number] = [dims.w / 2, dims.h / 2, -dims.d / 2];
 

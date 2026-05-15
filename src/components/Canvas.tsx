@@ -15,7 +15,6 @@ export function Canvas({ packedResult, summary }: Props) {
   const setView = useStore((s) => s.setView);
   const activeBoxId = useStore((s) => s.activeBoxId);
   const setActiveBoxId = useStore((s) => s.setActiveBoxId);
-  const showLabels = useStore((s) => s.showLabels);
 
   const stageRef = useRef<HTMLDivElement>(null);
   const [stageSize, setStageSize] = useState({ w: 800, h: 500 });
@@ -76,7 +75,7 @@ export function Canvas({ packedResult, summary }: Props) {
                 : 'No items packed in this box yet.'}
             </div>
           ) : view === '3d' ? (
-            <Scene3D box={activeBox} showLabels={showLabels} />
+            <Scene3D box={activeBox} />
           ) : (
             <LayerView box={activeBox} scale={scale} />
           )}

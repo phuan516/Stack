@@ -122,12 +122,32 @@ export function exportExcel(items: Item[], boxes: Box[], packedResult: PackResul
 export function downloadTemplate(): void {
   const wb = XLSX.utils.book_new();
   const itemsSheet = XLSX.utils.json_to_sheet([
-    { name: 'Figure (1/7 scale)', width: 18, depth: 14, height: 28, qty: 6, unit: 'cm' },
-    { name: 'Nendoroid box', width: 10, depth: 10, height: 14, qty: 12, unit: 'cm' },
+    // tall/upright items
+    { name: 'Figure (1/7 scale)',  width: 18, depth: 14, height: 28, qty: 6,  unit: 'cm' },
+    { name: 'Figma box (small)',   width: 16, depth: 9,  height: 22, qty: 10, unit: 'cm' },
+    { name: 'Plushie (boxed)',     width: 22, depth: 18, height: 26, qty: 3,  unit: 'cm' },
+    // small/cubic items
+    { name: 'Nendoroid box',       width: 10, depth: 10, height: 14, qty: 12, unit: 'cm' },
+    { name: 'Pin set',             width: 12, depth: 8,  height: 2,  qty: 15, unit: 'cm' },
+    { name: 'Blind box (small)',   width: 8,  depth: 8,  height: 10, qty: 20, unit: 'cm' },
+    // flat/wide items
+    { name: 'Art book',            width: 30, depth: 22, height: 3,  qty: 5,  unit: 'cm' },
+    { name: 'Gunpla HG kit',       width: 31, depth: 19, height: 8,  qty: 8,  unit: 'cm' },
+    { name: 'Gunpla MG kit',       width: 38, depth: 24, height: 10, qty: 4,  unit: 'cm' },
+    // large single items (stress test for box selection)
+    { name: 'Figure (1/4 scale)',  width: 25, depth: 20, height: 45, qty: 2,  unit: 'cm' },
+    { name: 'Diorama base',        width: 40, depth: 30, height: 15, qty: 1,  unit: 'cm' },
   ], { header: ['name', 'width', 'depth', 'height', 'qty', 'unit'] });
   const boxesSheet = XLSX.utils.json_to_sheet([
+    // compact box — good for small/flat items
+    { name: 'Small flat',    width: 40, depth: 30, height: 20, unit: 'cm' },
+    // general-purpose boxes
     { name: 'Medium carrier', width: 50, depth: 40, height: 35, unit: 'cm' },
-    { name: 'Large carrier', width: 60, depth: 45, height: 45, unit: 'cm' },
+    { name: 'Large carrier',  width: 60, depth: 45, height: 45, unit: 'cm' },
+    // tall box — needed for large upright figures
+    { name: 'Tall narrow',   width: 30, depth: 25, height: 60, unit: 'cm' },
+    // extra-large — overflow / bulk scenario
+    { name: 'XL pallet box', width: 80, depth: 60, height: 60, unit: 'cm' },
   ], { header: ['name', 'width', 'depth', 'height', 'unit'] });
   XLSX.utils.book_append_sheet(wb, itemsSheet, 'Items');
   XLSX.utils.book_append_sheet(wb, boxesSheet, 'Boxes');

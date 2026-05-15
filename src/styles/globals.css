@@ -232,7 +232,7 @@
 .fill-bar-fill { height: 100%; background: var(--good); transition: width 0.6s cubic-bezier(0.4, 0.1, 0.2, 1); }
 .fill-bar-fill.warn { background: var(--warn); }
 .fill-bar-fill.bad  { background: var(--bad); }
-.fill-bar-fill.full { background: var(--accent); }
+.fill-bar-fill.full { background: var(--full); }
 .box-card-stats { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10.5px; margin-top: 6px; color: var(--ink-2); }
 .box-card-stats .pct { font-weight: 700; color: var(--ink); font-size: 13px; }
 .box-card-items { margin-top: 12px; border-top: 1px solid var(--rule-soft); padding-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
@@ -247,8 +247,9 @@
   margin: 10px 0;
   border-radius: var(--radius);
   font-size: 12px;
-  display: flex; align-items: center; gap: 8px;
 }
+.unpacked-warning-header { display: flex; align-items: center; gap: 8px; }
+.chip-bad { border-color: color-mix(in oklab, var(--bad) 30%, var(--rule)); color: var(--bad); }
 
 /* ─── Canvas (center) ─── */
 .canvas { background: var(--bg); display: flex; flex-direction: column; min-height: 0; position: relative; }

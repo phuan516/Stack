@@ -82,12 +82,12 @@ function tryPlace(
   return best;
 }
 
-function placeIntoBox(
+function probeBox(
   box: { w: number; d: number; h: number },
   placed: Candidate[],
   points: Point[],
   item: { w: number; d: number; h: number }
-): (Candidate & { rot: number }) | null {
+): (Candidate & { rot: number; score: number }) | null {
   let best: (Candidate & { rot: number; score: number }) | null = null;
   for (const rot of rotations(item)) {
     const placement = tryPlace(box, placed, points, rot);
@@ -95,11 +95,18 @@ function placeIntoBox(
       best = { ...placement, rot: rot[3] };
     }
   }
-  if (!best) return null;
+  return best;
+}
+
+function commitPlacement(
+  best: Candidate & { rot: number; score: number },
+  box: { w: number; d: number; h: number },
+  points: Point[]
+): void {
   const newPoints: Point[] = [
-    { x: best.x + best.w, y: best.y, z: best.z },
-    { x: best.x, y: best.y + best.d, z: best.z },
-    { x: best.x, y: best.y, z: best.z + best.h },
+    { x: best.x + best.w, y: best.y,         z: best.z },
+    { x: best.x,          y: best.y + best.d, z: best.z },
+    { x: best.x,          y: best.y,          z: best.z + best.h },
   ];
   for (const np of newPoints) {
     if (np.x > box.w - 0.0001 || np.y > box.d - 0.0001 || np.z > box.h - 0.0001) continue;
@@ -108,7 +115,6 @@ function placeIntoBox(
     );
     if (!exists) points.push(np);
   }
-  return best;
 }
 
 export function pack(boxes: Box[], items: Item[]): PackResult {
@@ -139,7 +145,10 @@ export function pack(boxes: Box[], items: Item[]): PackResult {
       });
     }
   }
-  instances.sort((a, b) => b.volume - a.volume);
+  instances.sort((a, b) => {
+    if (Math.abs(b.volume - a.volume) > 0.0001) return b.volume - a.volume;
+    return Math.max(b.w, b.d, b.h) - Math.max(a.w, a.d, a.h);
+  });
 
   type PackSlot = {
     boxId: string;
@@ -147,6 +156,7 @@ export function pack(boxes: Box[], items: Item[]): PackResult {
     dims: { w: number; d: number; h: number };
     items: (Candidate & { itemId: string; name: string; color: string; instanceIdx: number; rot: number; origW: number; origD: number; origH: number })[];
     points: Point[];
+    usedVolume: number;
   };
 
   const packed: PackSlot[] = boxes.map((b) => ({
@@ -155,30 +165,42 @@ export function pack(boxes: Box[], items: Item[]): PackResult {
     dims: { w: b.w, d: b.d, h: b.h },
     items: [],
     points: [{ x: 0, y: 0, z: 0 }],
+    usedVolume: 0,
   }));
 
   const unpacked: UnpackedItem[] = [];
 
   for (const inst of instances) {
-    let placedSomewhere = false;
+    let bestSlot: PackSlot | null = null;
+    let bestPlacement: (Candidate & { rot: number; score: number }) | null = null;
+    let bestBoxScore = Infinity;
+
     for (const slot of packed) {
-      const placement = placeIntoBox(slot.dims, slot.items as Candidate[], slot.points, inst);
-      if (placement) {
-        slot.items.push({
-          ...placement,
-          itemId: inst.itemId,
-          name: inst.name,
-          color: inst.color,
-          instanceIdx: inst.instanceIdx,
-          origW: inst.w,
-          origD: inst.d,
-          origH: inst.h,
-        });
-        placedSomewhere = true;
-        break;
+      const probe = probeBox(slot.dims, slot.items as Candidate[], slot.points, inst);
+      if (!probe) continue;
+      const fillRatio = slot.usedVolume / (slot.dims.w * slot.dims.d * slot.dims.h);
+      const boxScore = probe.score - fillRatio * 1e9;
+      if (boxScore < bestBoxScore) {
+        bestBoxScore = boxScore;
+        bestSlot = slot;
+        bestPlacement = probe;
       }
     }
-    if (!placedSomewhere) {
+
+    if (bestSlot && bestPlacement) {
+      commitPlacement(bestPlacement, bestSlot.dims, bestSlot.points);
+      bestSlot.usedVolume += inst.w * inst.d * inst.h;
+      bestSlot.items.push({
+        ...bestPlacement,
+        itemId: inst.itemId,
+        name: inst.name,
+        color: inst.color,
+        instanceIdx: inst.instanceIdx,
+        origW: inst.w,
+        origD: inst.d,
+        origH: inst.h,
+      });
+    } else {
       unpacked.push({
         itemId: inst.itemId,
         name: inst.name,
@@ -192,7 +214,7 @@ export function pack(boxes: Box[], items: Item[]): PackResult {
   }
 
   const resultBoxes: PackedBox[] = packed.map((slot) => {
-    const used = slot.items.reduce((s, it) => s + it.w * it.d * it.h, 0);
+    const used = slot.usedVolume;
     const total = slot.dims.w * slot.dims.d * slot.dims.h;
     const zSet = new Set<number>();
     slot.items.forEach((it) => zSet.add(Math.round(it.z * 1000) / 1000));

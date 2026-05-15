@@ -22,7 +22,7 @@ function BoxCard({ box, packedResult }: { box: Box; packedResult: PackResult }) 
 
   const packed = packedResult.boxes.find((p) => p.boxId === box.id);
   const fill = packed?.fillPct ?? 0;
-  const fillClass = fill >= 0.85 ? 'full' : fill >= 0.6 ? 'good' : fill >= 0.3 ? 'warn' : 'bad';
+  const fillClass = fill >= 0.95 ? 'full' : fill >= 0.75 ? 'good' : fill >= 0.3 ? 'warn' : 'bad';
   const active = activeBoxId === box.id;
   const editing = editingId === box.id;
 
@@ -145,14 +145,30 @@ export function BoxesPanel({ packedResult }: Props) {
         <button className="add-row compact" onClick={addBox}>
           <Plus size={12} /> Add box
         </button>
-        {unpacked.length > 0 && (
-          <div className="unpacked-warning">
-            <span style={{ fontWeight: 700 }}>⚠</span>
-            <span>
-              <b>{unpacked.length}</b> item{unpacked.length === 1 ? '' : 's'} didn't fit. Add more boxes or check dimensions.
-            </span>
-          </div>
-        )}
+        {unpacked.length > 0 && (() => {
+          const groups: Record<string, { name: string; color: string; qty: number }> = {};
+          for (const it of unpacked) {
+            if (!groups[it.itemId]) groups[it.itemId] = { name: it.name, color: it.color, qty: 0 };
+            groups[it.itemId].qty++;
+          }
+          return (
+            <div className="unpacked-warning">
+              <div className="unpacked-warning-header">
+                <span style={{ fontWeight: 700 }}>⚠</span>
+                <span><b>{unpacked.length}</b> item{unpacked.length === 1 ? '' : 's'} didn't fit</span>
+              </div>
+              <div className="box-card-items" style={{ marginTop: 8 }}>
+                {Object.entries(groups).map(([key, val]) => (
+                  <span key={key} className="chip chip-bad">
+                    <span className="chip-dot" style={{ background: val.color }} />
+                    {val.name}
+                    <span className="chip-x">×{val.qty}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
