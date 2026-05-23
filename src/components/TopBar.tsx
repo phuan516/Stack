@@ -27,7 +27,7 @@ export function TopBar({ fileInputRef, packedResult }: Props) {
   return (
     <div className="topbar">
       <div className="brand">
-        <span className="brand-mark"><span /><span /><span /></span>
+        <img src="/mark-dark.svg" alt="Stack logo" className="brand-logo" />
         stack
         <span className="brand-tag">packing simulator</span>
       </div>
