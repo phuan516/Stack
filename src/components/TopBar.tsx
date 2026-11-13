@@ -30,6 +30,7 @@ export function TopBar({ fileInputRef, packedResult }: Props) {
         <img src="/mark-dark.svg" alt="Stack logo" className="brand-logo" />
         stack
         <span className="brand-tag">packing simulator</span>
+        <a className="brand-tag brand-credit" href="https://wizardindustries.app">by Wizard Industries</a>
       </div>
       <div className="topbar-spacer" />
 
